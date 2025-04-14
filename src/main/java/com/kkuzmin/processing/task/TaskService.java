@@ -1,5 +1,6 @@
 package com.kkuzmin.processing.task;
 
+import com.kkuzmin.processing.field.FieldDifference;
 import com.kkuzmin.processing.field.FieldProcessor;
 import com.kkuzmin.processing.person.Person;
 import com.kkuzmin.processing.person.PersonDTO;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TaskService {
@@ -30,6 +33,10 @@ public class TaskService {
 
     @Transactional
     public Task createTask(PersonDTO personDTO) {
+        String personId = personDTO.id();
+        if (personId != null && !personRepository.existsById(personId)) {
+            throw new PersonNotExistsException(personId);
+        }
         Person person = PersonMapper.INSTANCE.toPersonEntity(personDTO);
         personRepository.save(person);
 
@@ -39,11 +46,11 @@ public class TaskService {
         return task;
     }
 
-    public void executeTask(PersonDTO newPersonDTO, Task task) {
-        String personId = newPersonDTO.id();
-        Person previousPerson = personId != null ? personRepository.findById(personId).orElseThrow(() -> new PersonNotExistsException(personId)) : null;
+    public CompletableFuture<Map<String, FieldDifference>> executeTask(PersonDTO newPersonDTO, Task task) {
+        String personId = task.getPersonId();
+        Person previousPerson = personRepository.findById(personId).orElseThrow(() -> new PersonNotExistsException(personId));
         PersonDTO previousPersonDTO = PersonMapper.INSTANCE.toPersonDTO(previousPerson);
-        fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
+        return fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
     }
 
     public List<TaskDTO> getAllTasks() {
