@@ -9,6 +9,7 @@ import com.kkuzmin.processing.person.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,19 +28,22 @@ public class TaskService {
         this.personRepository = personRepository;
     }
 
-    public Task processPersonUpdate(Person person) {
-        Person previousPerson = person.getId() != null ? personRepository.findById(person.getId()).orElseThrow(() -> new PersonNotExistsException(person.getId())) : null;
-
-        PersonDTO newPersonDTO = PersonMapper.INSTANCE.toPersonDTO(person);
-        PersonDTO previousPersonDTO = PersonMapper.INSTANCE.toPersonDTO(previousPerson);
-
+    @Transactional
+    public Task createTask(PersonDTO personDTO) {
+        Person person = PersonMapper.INSTANCE.toPersonEntity(personDTO);
         personRepository.save(person);
 
         Task task = new Task(person.getId());
         taskRepository.save(task);
 
-        fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
         return task;
+    }
+
+    public void executeTask(PersonDTO newPersonDTO, Task task) {
+        String personId = newPersonDTO.id();
+        Person previousPerson = personId != null ? personRepository.findById(personId).orElseThrow(() -> new PersonNotExistsException(personId)) : null;
+        PersonDTO previousPersonDTO = PersonMapper.INSTANCE.toPersonDTO(previousPerson);
+        fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
     }
 
     public List<TaskDTO> getAllTasks() {

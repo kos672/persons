@@ -35,9 +35,10 @@ public class PersonController {
     })
     @PostMapping
     public ResponseEntity<TaskResponseDTO> upsertPerson(@RequestBody PersonDTO personDTO) {
-        Person person = PersonMapper.INSTANCE.toPersonEntity(personDTO);
-        Task task = taskService.processPersonUpdate(person);
-        return ResponseEntity.accepted().body(new TaskResponseDTO(task.getId(), person.getId(), task.getStatus(), task.getProgress()));
+        Task task = taskService.createTask(personDTO);
+        taskService.executeTask(personDTO, task);
+
+        return ResponseEntity.accepted().body(new TaskResponseDTO(task.getId(), task.getPersonId(), task.getStatus(), task.getProgress()));
     }
 
 }
