@@ -6,6 +6,8 @@ services:
     build:
       context: .
     container_name: persons
+    environment:
+      - PERSONS_PROCESSING_SLOWDOWN_TIME_MS=${PERSONS_PROCESSING_SLOWDOWN_TIME_MS-3000}
     depends_on:
       - persons-db
     ports:

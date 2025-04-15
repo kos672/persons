@@ -5,6 +5,7 @@ import com.kkuzmin.processing.task.Task;
 import com.kkuzmin.processing.task.TaskRepository;
 import com.kkuzmin.processing.task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class FieldProcessor {
 
     private final TaskRepository taskRepository;
     private final FieldDifferenceService fieldDifferenceService;
+
+    @Value("${persons.processing.slowdown.time.ms}")
+    private int slowdownTimeMs;
 
     @Autowired
     public FieldProcessor(TaskRepository taskRepository, FieldDifferenceService fieldDifferenceService) {
@@ -57,7 +61,7 @@ public class FieldProcessor {
     private Optional<FieldDifference> processField(String fieldName, PersonDTO previousPerson, PersonDTO newPerson) throws InterruptedException {
         String prevValue = getFieldValue(previousPerson, fieldName);
         String newValue = getFieldValue(newPerson, fieldName);
-        Thread.sleep(3000);
+        Thread.sleep(slowdownTimeMs);
         return fieldDifferenceService.calculateDifference(fieldName, prevValue, newValue);
     }
 
