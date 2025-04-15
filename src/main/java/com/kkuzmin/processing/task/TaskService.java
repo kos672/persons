@@ -9,6 +9,7 @@ import com.kkuzmin.processing.person.PersonNotExistsException;
 import com.kkuzmin.processing.person.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,11 +47,8 @@ public class TaskService {
         return task;
     }
 
-    public CompletableFuture<Map<String, FieldDifference>> executeTask(PersonDTO newPersonDTO, Task task) {
-        String personId = task.getPersonId();
-        Person previousPerson = personRepository.findById(personId).orElseThrow(() -> new PersonNotExistsException(personId));
-        PersonDTO previousPersonDTO = PersonMapper.INSTANCE.toPersonDTO(previousPerson);
-        return fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
+    public void executeTask(PersonDTO newPersonDTO, PersonDTO previousPersonDTO, Task task) {
+        fieldProcessor.processFields(newPersonDTO, previousPersonDTO, task);
     }
 
     public List<TaskDTO> getAllTasks() {

@@ -31,7 +31,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "No tasks found"),
     })
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> listTasks() {
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
         List<TaskDTO> tasks = taskService.getAllTasks();
         return tasks.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(tasks);
     }
@@ -42,7 +42,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Task for the supplied taskId could not be found."),
     })
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskDTO> getTaskStatus(@PathVariable(name = "taskId") String taskId) {
+    public ResponseEntity<TaskDTO> getTask(@PathVariable(name = "taskId") String taskId) {
         return taskService.getTask(taskId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

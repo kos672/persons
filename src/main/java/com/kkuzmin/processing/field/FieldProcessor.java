@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FieldProcessor {
@@ -26,8 +23,7 @@ public class FieldProcessor {
     }
 
     @Async
-    public CompletableFuture<Map<String, FieldDifference>> processFields(PersonDTO newPerson, PersonDTO previousPerson, Task task) {
-        Map<String, FieldDifference> results = new HashMap<>();
+    public void processFields(PersonDTO newPerson, PersonDTO previousPerson, Task task) {
         try {
             task.setStatus(TaskStatus.IN_PROGRESS);
             task.setProgress(10);
@@ -56,7 +52,6 @@ public class FieldProcessor {
             taskRepository.save(task);
             throw new FieldProcessingException(e);
         }
-        return CompletableFuture.completedFuture(results);
     }
 
     private Optional<FieldDifference> processField(String fieldName, PersonDTO previousPerson, PersonDTO newPerson) throws InterruptedException {

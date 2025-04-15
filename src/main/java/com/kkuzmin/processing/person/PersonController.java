@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonController {
 
     private final TaskService taskService;
+    private final PersonService personService;
 
     @Autowired
-    public PersonController(TaskService taskService) {
+    public PersonController(TaskService taskService, PersonService personService) {
         this.taskService = taskService;
+        this.personService = personService;
     }
 
     @Operation(summary = "Upsert a person", description = "Create a person if does not exist, otherwise update existing one.")
@@ -35,8 +37,10 @@ public class PersonController {
     })
     @PostMapping
     public ResponseEntity<TaskResponseDTO> upsertPerson(@RequestBody PersonDTO personDTO) {
+        PersonDTO previousPersonDTO = this.personService.getPerson(personDTO.id());
         Task task = taskService.createTask(personDTO);
-        taskService.executeTask(personDTO, task);
+
+        taskService.executeTask(personDTO, previousPersonDTO, task);
 
         return ResponseEntity.accepted().body(new TaskResponseDTO(task.getId(), task.getPersonId(), task.getStatus(), task.getProgress()));
     }

@@ -12,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,7 @@ public class Task {
     @ElementCollection
     @CollectionTable(name = "task_results")
     @MapKeyJoinColumn(name = "field_name")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Map<String, FieldDifference> results;
 
     public Task() {

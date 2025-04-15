@@ -30,7 +30,7 @@ public class FieldDifferenceService {
         return Optional.of(new FieldDifference(fieldName, previous, newValue, classification, similarity));
     }
 
-    public Double calculateDissimilarity(String previous, String current) {
+    private Double calculateDissimilarity(String previous, String current) {
         int levenshteinDistance = calculateLevenshteinDistance(previous, current);
         int maxLength = Math.max(previous.length(), current.length());
 
@@ -38,7 +38,7 @@ public class FieldDifferenceService {
         return Double.parseDouble(String.format("%.3f", dissimilarity));
     }
 
-    public int calculateLevenshteinDistance(String previous, String current) {
+    private int calculateLevenshteinDistance(String previous, String current) {
         int m = previous.length();
         int n = current.length();
 
