@@ -17,6 +17,10 @@ repositories {
 	mavenCentral()
 }
 
+bootJar {
+	archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+}
+
 dependencies {
 	def h2Version = "2.3.232"
 
@@ -30,6 +34,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 
 	runtimeOnly "com.h2database:h2:$h2Version"
+	runtimeOnly("org.postgresql:postgresql:42.7.5")
 
 	implementation 'org.mapstruct:mapstruct:1.6.3'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
