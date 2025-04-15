@@ -59,7 +59,10 @@ public class TaskService {
                 .toList();
     }
 
-    @Cacheable(value = "tasks", unless = "#result.progress<100")
+    @Caching(cacheable = {
+        @Cacheable(value = "tasks", unless = "#result?.status!= T(com.kkuzmin.processing.task.TaskStatus).COMPLETED"),
+        @Cacheable(value = "tasks", unless = "#result?.status!=T(com.kkuzmin.processing.task.TaskStatus).FAILED")
+    })
     public Optional<TaskDTO> getTask(String taskId) {
         return taskRepository.findById(taskId)
                 .map(TaskMapper.INSTANCE::toTaskDTO);
