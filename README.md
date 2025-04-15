@@ -10,6 +10,7 @@
 | GET    | /api/tasks            | Retrieve all tasks                                                            |
 | GET    | /api/tasks/{taskId}   | Retrieve a task for the given taskId                                          |
 
+Application available at <code>localhost:8080</code>
 
 ### Start the application via Gradle
 
